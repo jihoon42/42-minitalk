@@ -18,10 +18,10 @@ $(LIBFT):
 	$(MAKE) -C $(LIBFT_DIR)
 
 $(SERVER): $(SERVER_OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(SERVER_OBJS) $(LIBFT) -o $(SERVER)
+	$(CC) $(CFLAGS) $(SERVER_OBJS) $(LIBFT) -o $(SERVER) 2>/dev/null
 
 $(CLIENT): $(CLIENT_OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(CLIENT_OBJS) $(LIBFT) -o $(CLIENT)
+	$(CC) $(CFLAGS) $(CLIENT_OBJS) $(LIBFT) -o $(CLIENT) 2>/dev/null
 
 %.o: %.c minitalk.h
 	$(CC) $(CFLAGS) -c $< -o $@

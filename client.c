@@ -36,7 +36,7 @@ int	main(int argc, char **argv)
 
 	if (argc != 3)
 	{
-		write(2, "Usage: ./client <PID> <message>\n", 31);
+		write(2, "Usage: ./client <PID> <message>\n", 32);
 		return (1);
 	}
 	pid = ft_atoi(argv[1]);
