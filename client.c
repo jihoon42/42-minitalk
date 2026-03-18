@@ -13,6 +13,25 @@
 #include "minitalk.h"
 #include "libft/libft.h"
 
+int	g_ack;
+
+static void	ack_handler(int sig)
+{
+	(void)sig;
+	g_ack = 1;
+}
+
+static void	send_bit(int pid, int bit)
+{
+	g_ack = 0;
+	if (bit)
+		kill(pid, SIGUSR2);
+	else
+		kill(pid, SIGUSR1);
+	while (!g_ack)
+		pause();
+}
+
 static void	send_char(int pid, char c)
 {
 	int	bit;
@@ -20,19 +39,28 @@ static void	send_char(int pid, char c)
 	bit = 0;
 	while (bit < 8)
 	{
-		if (c & (1 << bit))
-			kill(pid, SIGUSR2);
-		else
-			kill(pid, SIGUSR1);
-		usleep(100);
+		send_bit(pid, c & (1 << bit));
 		bit++;
 	}
 }
 
+static void	send_str(int pid, char *str)
+{
+	int	i;
+
+	i = 0;
+	while (str[i])
+	{
+		send_char(pid, str[i]);
+		i++;
+	}
+	send_char(pid, '\0');
+}
+
 int	main(int argc, char **argv)
 {
-	int	pid;
-	int	i;
+	struct sigaction	sa;
+	int					pid;
 
 	if (argc != 3)
 	{
@@ -45,12 +73,10 @@ int	main(int argc, char **argv)
 		write(2, "Error: invalid PID\n", 19);
 		return (1);
 	}
-	i = 0;
-	while (argv[2][i])
-	{
-		send_char(pid, argv[2][i]);
-		i++;
-	}
-	send_char(pid, '\0');
+	sa.sa_handler = ack_handler;
+	sa.sa_flags = SA_RESTART;
+	sigemptyset(&sa.sa_mask);
+	sigaction(SIGUSR1, &sa, NULL);
+	send_str(pid, argv[2]);
 	return (0);
 }

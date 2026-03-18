@@ -15,8 +15,9 @@
 
 t_data	g_data;
 
-static void	handle_signal(int sig)
+static void	handle_signal(int sig, siginfo_t *info, void *context)
 {
+	(void)context;
 	if (sig == SIGUSR2)
 		g_data.c |= (1 << g_data.bit);
 	g_data.bit++;
@@ -29,6 +30,7 @@ static void	handle_signal(int sig)
 		g_data.bit = 0;
 		g_data.c = 0;
 	}
+	kill(info->si_pid, SIGUSR1);
 }
 
 int	main(void)
@@ -37,12 +39,11 @@ int	main(void)
 
 	ft_putnbr_fd(getpid(), 1);
 	write(1, "\n", 1);
-	sa.sa_handler = handle_signal;
-	sa.sa_flags = SA_RESTART;
+	sa.sa_sigaction = handle_signal;
+	sa.sa_flags = SA_SIGINFO | SA_RESTART;
 	sigemptyset(&sa.sa_mask);
 	sigaddset(&sa.sa_mask, SIGUSR1);
 	sigaddset(&sa.sa_mask, SIGUSR2);
-	sigaddset(&sa.sa_mask, SIGINT);
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
