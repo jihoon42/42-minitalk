@@ -6,7 +6,7 @@
 /*   By: jkim2 <jkim2@student.42gyeongsan.kr>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/03/16 10:19:15 by jkim2             #+#    #+#             */
-/*   Updated: 2026/03/16 10:19:27 by jkim2            ###   ########.fr       */
+/*   Updated: 2026/03/18 16:39:45 by jkim2            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	send_char(int pid, char c)
 			kill(pid, SIGUSR2);
 		else
 			kill(pid, SIGUSR1);
-		usleep(100);
+		usleep(500);
 		bit++;
 	}
 }
